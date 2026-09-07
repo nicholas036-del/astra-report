@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[Fillable(['code', 'name'])]
 class Area extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code', 'name'];
-
-    public function tugas(): HasMany
+    public function tasks(): HasMany
     {
-        return $this->hasMany(Tugas::class);
+        return $this->hasMany(Task::class);
     }
 }

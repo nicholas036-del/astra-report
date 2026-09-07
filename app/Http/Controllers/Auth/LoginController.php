@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
-class AuthController extends Controller
+class LoginController extends Controller
 {
     public function create(): View
     {
@@ -17,25 +18,25 @@ class AuthController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string'],
         ]);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'Email atau password salah.'])->onlyInput('email');
+            return back()
+                ->withErrors(['email' => 'Email atau password yang Anda masukkan salah.'])
+                ->onlyInput('email');
         }
 
         $request->session()->regenerate();
 
-        $user = Auth::user();
-        $redirect = $user->isSupervisor() ? route('tugas.index') : route('pengumpulan.index');
-
-        return redirect()->intended($redirect);
+        return redirect()->intended(route('dashboard'));
     }
 
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::logout();
+        Auth::guard('web')->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

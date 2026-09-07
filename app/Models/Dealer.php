@@ -2,24 +2,24 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
+#[Fillable(['code', 'name'])]
 class Dealer extends Model
 {
     use HasFactory;
-
-    protected $fillable = ['code', 'name'];
 
     public function user(): HasOne
     {
         return $this->hasOne(User::class);
     }
 
-    public function pengumpulans(): HasMany
+    public function submissions(): HasMany
     {
-        return $this->hasMany(Pengumpulan::class);
+        return $this->hasMany(Submission::class);
     }
 }
