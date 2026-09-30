@@ -3,22 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Auth;
 
-#[Fillable(['submission_id', 'actor_id', 'activity', 'note'])]
-class SubmissionLog extends Model
+#[Fillable(['user_id', 'action', 'subject_type', 'subject_id', 'description'])]
+class ActivityLog extends Model
 {
-    use HasFactory;
-
-    public function submission(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Submission::class);
+        return $this->belongsTo(User::class);
     }
 
-    public function actor(): BelongsTo
+    public static function record(string $action, ?Model $subject = null, ?string $description = null): self
     {
-        return $this->belongsTo(User::class, 'actor_id');
+        return self::create([
+            'user_id' => Auth::id(),
+            'action' => $action,
+            'subject_type' => $subject ? class_basename($subject) : null,
+            'subject_id' => $subject?->getKey(),
+            'description' => $description,
+        ]);
     }
 }

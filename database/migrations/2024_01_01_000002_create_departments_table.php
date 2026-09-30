@@ -8,10 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('departments')) {
+            return;
+        }
+
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name')->unique();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

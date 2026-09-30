@@ -8,18 +8,23 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('submissions')) {
+            return;
+        }
+
         Schema::create('submissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('task_id')->constrained('tasks')->cascadeOnDelete();
-            $table->foreignId('dealer_id')->constrained('dealers')->cascadeOnDelete();
+            $table->foreignId('task_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('dealer_id')->constrained()->cascadeOnDelete();
             $table->foreignId('submitted_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('google_drive_link');
-            $table->text('dealer_note')->nullable();
-            $table->enum('status', ['REVISI', 'DISETUJUI', 'DITOLAK'])->default('REVISI');
-            $table->text('supervisor_note')->nullable();
+            $table->text('content');
+            $table->string('file_path')->nullable();
+            $table->string('status', 20)->default('MENUNGGU'); // MENUNGGU, DISETUJUI, REVISI, DITOLAK
+            $table->text('reviewer_note')->nullable();
             $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('submitted_at')->nullable();
             $table->timestamp('reviewed_at')->nullable();
+            $table->timestamp('submitted_at')->nullable();
+            $table->unsignedInteger('resubmit_count')->default(0);
             $table->timestamps();
 
             $table->unique(['task_id', 'dealer_id']);

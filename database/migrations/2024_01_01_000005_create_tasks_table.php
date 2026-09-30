@@ -8,13 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('tasks')) {
+            return;
+        }
+
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->foreignId('department_id')->constrained('departments')->cascadeOnDelete();
-            $table->foreignId('area_id')->constrained('areas')->cascadeOnDelete();
-            $table->date('due_at');
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->text('description')->nullable();
+            $table->foreignId('department_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('area_id')->nullable()->constrained()->nullOnDelete();
+            $table->date('due_date')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

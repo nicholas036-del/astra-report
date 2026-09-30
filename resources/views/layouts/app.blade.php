@@ -1,61 +1,41 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'ASTRA REPORT')</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-900 min-h-screen">
-    <nav class="bg-slate-800 text-white">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-6">
-                <span class="font-semibold tracking-wide">ASTRA REPORT</span>
-
-                @auth
-                    @if(auth()->user()->isSupervisor())
-                        <div class="flex gap-4 text-sm">
-                            <a href="{{ route('supervisor.tasks.index') }}" class="hover:text-slate-300">Tugas</a>
-                            <a href="{{ route('supervisor.reviews.index') }}" class="hover:text-slate-300">Periksa Tugas</a>
-                            <a href="{{ route('supervisor.dealers.index') }}" class="hover:text-slate-300">Dealer</a>
-                            <a href="{{ route('supervisor.departments.index') }}" class="hover:text-slate-300">Departemen</a>
-                            <a href="{{ route('supervisor.areas.index') }}" class="hover:text-slate-300">Area</a>
-                        </div>
-                    @else
-                        <div class="flex gap-4 text-sm">
-                            <a href="{{ route('dealer.tasks.index') }}" class="hover:text-slate-300">Daftar Tugas</a>
-                        </div>
-                    @endif
-                @endauth
+<body class="bg-gray-100 text-gray-800">
+    <nav class="bg-white shadow">
+        <div class="mx-auto flex max-w-5xl items-center justify-between p-4">
+            <div class="flex gap-4">
+                <a href="{{ route('dashboard') }}" class="font-bold">ASTRA REPORT</a>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('dealers.index') }}" class="text-blue-600">Dealer</a>
+                    <a href="{{ route('departments.index') }}" class="text-blue-600">Department</a>
+                    <a href="{{ route('areas.index') }}" class="text-blue-600">Area</a>
+                    <a href="{{ route('users.index') }}" class="text-blue-600">User</a>
+                @endif
+                @if (auth()->user()->isAdmin() || auth()->user()->isSupervisor())
+                    <a href="{{ route('tasks.index') }}" class="text-blue-600">Task</a>
+                    <a href="{{ route('reviews.index') }}" class="text-blue-600">Review</a>
+                    <a href="{{ route('activity-logs.index') }}" class="text-blue-600">Log</a>
+                @endif
+                @if (auth()->user()->isDealer())
+                    <a href="{{ route('submissions.index') }}" class="text-blue-600">Laporan Saya</a>
+                @endif
             </div>
-
-            @auth
-                <div class="flex items-center gap-3 text-sm">
-                    <span>{{ auth()->user()->name }}</span>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded">Keluar</button>
-                    </form>
-                </div>
-            @endauth
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="text-red-600">Logout</button>
+            </form>
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
-        @if (session('status'))
-            <div class="mb-4 rounded bg-green-100 border border-green-300 text-green-800 px-4 py-3 text-sm">
-                {{ session('status') }}
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="mb-4 rounded bg-red-100 border border-red-300 text-red-800 px-4 py-3 text-sm">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
+    <main class="mx-auto max-w-5xl p-4">
+        @if (session('success'))
+            <div class="mb-4 rounded bg-green-100 p-3 text-green-800">{{ session('success') }}</div>
         @endif
 
         @yield('content')

@@ -3,25 +3,25 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'task_id', 'dealer_id', 'submitted_by', 'google_drive_link',
-    'dealer_note', 'status', 'supervisor_note', 'reviewed_by',
-    'submitted_at', 'reviewed_at',
+    'task_id', 'dealer_id', 'submitted_by', 'content', 'file_path', 'status',
+    'reviewer_note', 'reviewed_by', 'reviewed_at', 'submitted_at', 'resubmit_count',
 ])]
 class Submission extends Model
 {
-    use HasFactory;
+    public const MENUNGGU = 'MENUNGGU';
+    public const DISETUJUI = 'DISETUJUI';
+    public const REVISI = 'REVISI';
+    public const DITOLAK = 'DITOLAK';
 
     protected function casts(): array
     {
         return [
-            'submitted_at' => 'datetime',
             'reviewed_at' => 'datetime',
+            'submitted_at' => 'datetime',
         ];
     }
 
@@ -45,14 +45,8 @@ class Submission extends Model
         return $this->belongsTo(User::class, 'reviewed_by');
     }
 
-    public function logs(): HasMany
+    public function canResubmit(): bool
     {
-        return $this->hasMany(SubmissionLog::class)->latest();
-    }
-
-    public function canBeResubmitted(): bool
-    {
-        return $this->status === 'REVISI' && ! $this->task->isPastDue();
+        return $this->status === self::REVISI;
     }
 }
-
