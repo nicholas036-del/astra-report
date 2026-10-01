@@ -7,65 +7,45 @@ use App\Models\Dealer;
 use App\Models\Department;
 use App\Models\Task;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        $supervisor = User::create([
-            'name' => 'Supervisor ASTRA',
-            'email' => 'supervisor@astra.test',
-            'password' => Hash::make('password'),
-            'role' => 'supervisor',
-        ]);
+        $dealer = Dealer::firstOrCreate(
+            ['code' => 'D001'],
+            ['name' => 'Dealer Test', 'address' => 'Jakarta', 'phone' => '08123456789']
+        );
 
-        $departmentSales = Department::create(['code' => 'SLS', 'name' => 'Sales']);
-        $departmentAfterSales = Department::create(['code' => 'AFS', 'name' => 'After Sales']);
+        $department = Department::firstOrCreate(['name' => 'Sales'], ['description' => 'Departemen Sales']);
+        $area = Area::firstOrCreate(['name' => 'Jakarta'], ['description' => 'Wilayah Jakarta']);
 
-        $areaJateng = Area::create(['code' => 'JTG', 'name' => 'Jawa Tengah']);
-        $areaJatim = Area::create(['code' => 'JTM', 'name' => 'Jawa Timur']);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin', 'password' => 'password123', 'role' => 'admin']
+        );
 
-        $dealerOne = Dealer::create(['code' => 'D001', 'name' => 'Dealer Semarang']);
-        $dealerTwo = Dealer::create(['code' => 'D002', 'name' => 'Dealer Surabaya']);
+        User::updateOrCreate(
+            ['email' => 'supervisor@example.com'],
+            ['name' => 'Supervisor Test', 'password' => 'password123', 'role' => 'supervisor']
+        );
 
-        User::create([
-            'name' => 'Dealer Semarang',
-            'email' => 'dealer1@astra.test',
-            'password' => Hash::make('password'),
-            'role' => 'dealer',
-            'dealer_id' => $dealerOne->id,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'dealer@example.com'],
+            ['name' => 'Dealer Test', 'password' => 'password123', 'role' => 'dealer', 'dealer_id' => $dealer->id]
+        );
 
-        User::create([
-            'name' => 'Dealer Surabaya',
-            'email' => 'dealer2@astra.test',
-            'password' => Hash::make('password'),
-            'role' => 'dealer',
-            'dealer_id' => $dealerTwo->id,
-        ]);
-
-        Task::create([
-            'title' => 'Laporan Penjualan Bulan Ini',
-            'department_id' => $departmentSales->id,
-            'area_id' => $areaJateng->id,
-            'due_at' => now()->addDays(7),
-            'created_by' => $supervisor->id,
-        ]);
-
-        Task::create([
-            'title' => 'Laporan Servis Berkala',
-            'department_id' => $departmentAfterSales->id,
-            'area_id' => $areaJatim->id,
-            'due_at' => now()->addDays(14),
-            'created_by' => $supervisor->id,
-        ]);
+        Task::firstOrCreate(
+            ['title' => 'Laporan Bulanan'],
+            [
+                'description' => 'Laporan penjualan bulanan dealer.',
+                'department_id' => $department->id,
+                'area_id' => $area->id,
+                'due_date' => now()->addDays(14),
+                'is_active' => true,
+                'created_by' => $admin->id,
+            ]
+        );
     }
 }
