@@ -26,10 +26,14 @@
                     <a href="{{ route('submissions.index') }}" class="text-blue-600">Laporan Saya</a>
                 @endif
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="text-red-600">Logout</button>
-            </form>
+
+            <div class="flex items-center gap-4">
+                <a href="{{ route('profile.edit') }}" class="text-sm text-gray-700">{{ auth()->user()->name }}</a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="text-red-600">Logout</button>
+                </form>
+            </div>
         </div>
     </nav>
 

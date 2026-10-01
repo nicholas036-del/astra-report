@@ -10,6 +10,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -35,6 +36,7 @@ Route::middleware(['auth', 'role:admin,supervisor'])->group(function () {
     Route::resource('tasks', TaskController::class)->except('show');
 
     Route::get('/reviews', [ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/export', [ReviewController::class, 'export'])->name('reviews.export');
     Route::get('/reviews/{submission}', [ReviewController::class, 'show'])->name('reviews.show');
     Route::put('/reviews/{submission}', [ReviewController::class, 'update'])->name('reviews.update');
 
@@ -51,3 +53,12 @@ Route::middleware(['auth', 'role:dealer'])
         Route::get('/{submission}/edit', [SubmissionController::class, 'edit'])->name('edit');
         Route::put('/{submission}', [SubmissionController::class, 'update'])->name('update');
     });
+
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+});
