@@ -1,44 +1,30 @@
 @extends('layouts.app')
-
 @section('title', 'Log Aktivitas')
-
 @section('content')
-<div class="mb-4">
-    <h1 class="text-xl font-bold">Daftar Log Aktivitas</h1>
-</div>
+    <h1 class="mb-4 text-2xl font-bold">Log Aktivitas</h1>
 
-<div class="overflow-x-auto bg-white rounded shadow">
-    <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Waktu</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">User</th>
-                <th class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">Aktivitas / Deskripsi</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-            @forelse ($logs as $log)
+    <div class="overflow-x-auto rounded bg-white shadow">
+        <table class="w-full text-sm">
+            <thead class="border-b bg-gray-50 text-left">
                 <tr>
-                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                        {{ $log->created_at->format('d-m-Y H:i:s') }}
-                    </td>
-                    <td class="px-6 py-4 text-sm font-medium text-gray-900 whitespace-nowrap">
-                        {{ $log->user->name ?? 'Sistem / Tamu' }}
-                    </td>
-                    <td class="px-6 py-4 text-sm text-gray-700">
-                        {{ $log->description ?? $log->action ?? '-' }}
-                    </td>
+                    <th class="p-3">Waktu</th>
+                    <th class="p-3">User</th>
+                    <th class="p-3">Aktivitas</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">Belum ada data log aktivitas.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @forelse ($logs as $log)
+                    <tr class="border-b">
+                        <td class="p-3">{{ optional($log->created_at)->format('d M Y H:i') ?? '-' }}</td>
+                        <td class="p-3">{{ $log->user->name ?? '-' }}</td>
+                        <td class="p-3">{{ $log->description ?? $log->action ?? $log->activity ?? '-' }}</td>
+                    </tr>
+                @empty
+                    <tr><td colspan="3" class="p-3 text-gray-500">Belum ada log.</td></tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-<div class="mt-4">
-    {{ $logs->links() }}
-</div>
+    <div class="mt-4">{{ $logs->links() }}</div>
 @endsection
